@@ -1,4 +1,4 @@
-- Instructions for Setting Up and Running the ABI Tool from Eduardo Ramos
+- INSTRUCTIONS FOR SETTING AND RUNNING THE ABI TOOL FROM EDUARDO RAMOS
 
 This guide outlines the steps to configure and run the project on your computer.
 

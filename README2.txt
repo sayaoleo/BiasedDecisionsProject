@@ -4,7 +4,7 @@ This guide outlines the steps to configure and run the project on your computer.
 
 - Step 1: Create a Folder
 
-1. Create a new folder on your computer to store the project files sent on your e-mail.
+1. Create a new folder on your computer to store the project files located in the GitHub repository
 
 - Step 2: Set Up Database Access
 

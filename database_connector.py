@@ -18,35 +18,6 @@ class BaseModel(Model):
     class Meta:
         database = database_proxy
 
-class Users(BaseModel):
-    username = CharField(max_length=255)
-    cod_sexo = CharField(max_length=50)
-    cod_age = CharField(max_length=50)
-    password = CharField(max_length=255)
-    email = CharField(max_length=255)
-    class Meta:
-        table_name = 'Users'
-        schema = SCHEMA_NAME
-        
-class agent_decision(BaseModel):
-    cod_agent = CharField()
-    cod_choice = IntegerField()
-    cod_problem = IntegerField()
-    desc_decision = CharField(null=True, max_length=2000)
-    financial_valuea = DoubleField() #V6.2
-    financial_valueb = DoubleField() #V6.2
-    probabilitya =  DoubleField() #V6.2
-    probabilityb =  DoubleField(null=True) #V6.2
-    payoff = IntegerField()
-    forgone = IntegerField()
-    rt = IntegerField()
-    button = CharField()
-    feedback = IntegerField()
-    bias_detected = IntegerField()
-    class Meta:
-        table_name = 'agent_decision'
-        schema = SCHEMA_NAME
-
 class agent(BaseModel):
     anos_experiencia_prof = IntegerField()
     anos_experiencia_prof_com_poder_decisao = IntegerField(
@@ -77,15 +48,15 @@ class alternatives(BaseModel):
     financial_valueb = IntegerField(null=True) #V6.2
     probabilitya =  IntegerField() #V6.2
     probabilityb =  IntegerField(null=True) #V6.2
-    option = CharField(max_length=10)
+    cod_choice = IntegerField()
 
     class Meta:
         schema = SCHEMA_NAME
         table_name = 'alternatives'
         indexes = (
-            (('option', 'cod_problem'), True),
+            (('cod_choice', 'cod_problem'), True),
         )
-        primary_key = CompositeKey('option', 'cod_problem')
+        primary_key = CompositeKey('cod_choice', 'cod_problem')
 
 
 class decision(BaseModel):
@@ -167,7 +138,6 @@ class valuebeholderhaspreferencevaluebearer(BaseModel):
 
 def create_tables():
     database_proxy.create_tables([
-        agent_decision,
         agent,
         alternatives,
         decision,
@@ -176,7 +146,6 @@ def create_tables():
         problem,
         ref,
         valuebeholderhaspreferencevaluebearer,
-        Users
     ])
 
 def do_insertions():
@@ -368,9 +337,5 @@ def show_all_decisions_made_query_for_agent(id_agent):
         ).join(decision, on=(problem.cod_problem == decision.cod_problem))
             .where((decision.cod_agent==id_agent))
     )
-    return query
-
-def show_all_problems_and_decision_query():
-    query = agent_decision.select()
     return query
 

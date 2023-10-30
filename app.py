@@ -1,3 +1,5 @@
+#teste
+
 #6.12:
 # entrada de dados - new UID e Experimento (validaca entrada dados, alteracao pergunta)
 # 2) If there is an alternative with 100% chance, it should be the first alternative to be input into the system.
@@ -11,7 +13,7 @@ import pandas as pd
 from PIL import Image
 from riskSeekingForLossesIdentification import isRiskSeekingForLossesChoice
 from peewee import PostgresqlDatabase
-from database_connector import decision, create_tables, valuebeholderhaspreferencevaluebearer, psychologicalvalueascription, database_proxy, do_insertions, problem, alternatives, ref, bias, show_all_decisions_tobemade_query_for_agent, show_all_problems_and_alternatives_query, show_decisions_query, Users, show_all_problems_and_decision_query, agent_decision
+from database_connector import decision, create_tables, valuebeholderhaspreferencevaluebearer, psychologicalvalueascription, database_proxy, do_insertions, problem, alternatives, ref, bias, show_all_decisions_tobemade_query_for_agent, show_all_problems_and_alternatives_query, show_decisions_query
 from time import time
 import locale
 
@@ -30,67 +32,6 @@ COD_BIAS_RISK_SEEKING = 1 #TODO: Replace with value in record
 #
 COD_PROBLEM_1 = 1
 MIN_ANSWER_SIZE = 1
-
-def create_user(username, cod_sexo, cod_age, email, password):
-    # Verifique se o usuário já existe
-    existing_user = Users.get_or_none(Users.username == username)
-    if existing_user:
-        st.error("Nome de usuário já existe.")
-        return
-    
-    # Crie um novo usuário
-    Users.create(
-        username=username,
-        cod_sexo=cod_sexo,
-        cod_age=cod_age,
-        email=email,
-        password=password,
-        # Outros campos do usuário aqui
-    )
-    
-    st.success("Usuário cadastrado com sucesso!")
-
-def register():
-    st.title("Cadastro de Usuário")
-    username = st.text_input("Nome de Usuário")
-    cod_sexo = st.selectbox('Sexo', ['M', 'F'])
-    cod_age = st.number_input("Idade", min_value=1, step=1)
-    email = st.text_input("E-mail")
-    password = st.text_input("Senha", type="password")
-    if st.button("Cadastrar"):
-        create_user(username, cod_sexo, cod_age, email, password)
-
-
-# Página de login
-def login():
-    st.title("Login")
-    username = st.text_input("Nome de Usuário")
-    password = st.text_input("Senha", type="password")
-    if st.button("Salvar"):
-        # Verifique se as credenciais estão corretas no banco de dados
-        user = Users.get_or_none(Users.username == username)
-        if user and user.password == password:
-            st.success("Login bem-sucedido!")
-        else:
-            st.error("Credenciais inválidas.")
-
-def analisar():
-    # Obtém todas as linhas da tabela agent_decision
-    decisions = agent_decision.select()
-
-    # Itera pelas linhas e aplica a função isRiskSeekingForLossesChoice
-    for decision in decisions:
-        coproblem = decision.cod_problem
-        codchoice = decision.cod_choice
-
-        # Aplica a função isRiskSeekingForLossesChoice
-        is_risk_seeking = isRiskSeekingForLossesChoice(coproblem, codchoice)
-
-        # Preenche a coluna bias_detected com 1 se for True, senão 0
-        decision.bias_detected = 1 if is_risk_seeking else 0
-
-        # Salva a alteração no banco de dados
-        decision.save()
 
 
 from PIL import Image, ImageFont, ImageDraw
@@ -382,7 +323,7 @@ init_connection()
 
 
 Page_cadastro = st.sidebar.selectbox(
-    'Ferramenta ABI (Doutorado de Eduardo Ramos)', ['Perfil', 'Cadastro de Problemas', 'Detecção Geral', 'Lista de Decisões a Tomar', 'Decisões Tomadas', 'Lista de todos os Problemas'], 0)
+    'Ferramenta ABI (Doutorado de Eduardo Ramos)', ['Cadastro de Problemas','Lista de Decisões a Tomar', 'Decisões Tomadas', 'Lista de todos os Problemas'], 0)
 
 if 'sis_sessao_page_risco' in st.session_state:
     #Exibe o alerta de risco no sistema
@@ -865,21 +806,6 @@ elif Page_cadastro == 'Lista de Decisões a Tomar' or ('id_problem' in st.experi
                     #Fim Start 1
 
 # Página de cadastro
-
-elif Page_cadastro == 'Perfil':
-    st.subheader("Seu Perfil")
-    if st.button("Cadastro"):
-        register()
-    if st.button("Login"):
-        login()
-        
-elif Page_cadastro == 'Detecção Geral':
-    st.subheader("Todos os Problemas")
-    query = show_all_problems_and_decision_query()
-    df = pd.DataFrame(query.namedtuples())
-    df
-    if st.button("Analisar"):
-        analisar()
 
 elif Page_cadastro == 'Cadastro de Problemas':
     #st.experimental_get_query_params() #Limpa o parametro idProblema

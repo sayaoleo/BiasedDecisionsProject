@@ -1,0 +1,73 @@
+--Code to Create the Database Tables with Foreign Key
+
+CREATE SCHEMA IF NOT EXISTS finalexperiment;
+
+CREATE TABLE IF NOT EXISTS finalexperiment.agent (
+    cod_agent SERIAL PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS finalexperiment.problem (
+    cod_problem SERIAL PRIMARY KEY,
+    desc_problem VARCHAR(5000) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS finalexperiment.ref (
+    cod_ref SERIAL PRIMARY KEY,
+    desc_ref VARCHAR(1000)
+);
+
+CREATE TABLE IF NOT EXISTS finalexperiment.bias (
+    cod_bias SERIAL PRIMARY KEY,
+    desc_bias VARCHAR(1000)
+);
+
+CREATE TABLE IF NOT EXISTS finalexperiment.alternatives (
+    cod_problem INTEGER NOT NULL,
+    cod_choice INTEGER NOT NULL,
+    desc_alternative VARCHAR(4000) NOT NULL,
+    financial_valuea INTEGER NOT NULL,
+    financial_valueb INTEGER,
+    probabilitya INTEGER NOT NULL,
+    probabilityb INTEGER,
+    PRIMARY KEY (cod_problem,cod_choice),
+    CONSTRAINT uq_ValueBearer_cod_choice_cod_problem UNIQUE (cod_problem,cod_choice),
+    FOREIGN KEY (cod_problem) REFERENCES finalexperiment.Problem(cod_problem)
+);
+
+CREATE TABLE IF NOT EXISTS finalexperiment.valueBeholderHasPreferenceValueBearer (
+    cod_agent INTEGER NOT NULL,
+    cod_problem INTEGER NOT NULL,
+    cod_choice INTEGER NOT NULL,
+    isriskseekingforlosses BOOLEAN,
+    ispreferredbearer BOOLEAN,
+    PRIMARY KEY (cod_agent, cod_problem, cod_choice),
+    CONSTRAINT uq_ValueBeholderHasPreferenceValueBearer_cod_agent_cod_choice_cod_problem UNIQUE (cod_agent, cod_problem, cod_choice),
+    FOREIGN KEY (cod_agent) REFERENCES finalexperiment.ValueBeholder(cod_agent),
+    FOREIGN KEY (cod_problem,cod_choice) REFERENCES finalexperiment.ValueBearer(cod_problem,cod_choice)
+);
+
+CREATE TABLE IF NOT EXISTS finalexperiment.decision (
+    cod_agent INTEGER NOT NULL,
+    cod_problem INTEGER NOT NULL,
+    cod_choice INTEGER NOT NULL,
+    desc_decison VARCHAR(2000),
+    PRIMARY KEY (cod_agent, cod_problem),
+    CONSTRAINT uq_Decision_cod_problem_cod_agent UNIQUE (cod_agent,cod_problem),
+    FOREIGN KEY (cod_agent, cod_problem, cod_choice) REFERENCES finalexperiment.ValueBeholderHasPreferenceValueBearer(cod_agent, cod_problem, cod_choice)
+);
+
+CREATE TABLE IF NOT EXISTS finalexperiment.psychologicalValueAscription (
+    cod_agent INTEGER NOT NULL,
+    cod_problem INTEGER NOT NULL,
+    cod_choice INTEGER NOT NULL,
+    cod_bias_calculated INTEGER NOT NULL,    
+    cod_ref_calculated INTEGER,
+    cod_value INTEGER,
+    PRIMARY KEY (cod_agent, cod_problem, cod_choice),
+    CONSTRAINT uq_PsychologicalValueAscription_cod_agent_cod_choice_cod_problem UNIQUE (cod_agent, cod_problem, cod_choice),
+    FOREIGN KEY (cod_bias_calculated) REFERENCES finalexperiment.Bias(cod_bias),
+    FOREIGN KEY (cod_ref_calculated) REFERENCES finalexperiment.Ref(cod_ref),
+    FOREIGN KEY (cod_agent, cod_problem, cod_choice) REFERENCES finalexperiment.ValueBeholderHasPreferenceValueBearer(cod_agent, cod_problem, cod_choice)
+);
+
+
